@@ -9,8 +9,7 @@ import com.acme.nutrimove.subscriptionservices.backend.subscriptions.interfaces.
 import com.acme.nutrimove.subscriptionservices.backend.subscriptions.interfaces.rest.resources.SubscriptionResource;
 import com.acme.nutrimove.subscriptionservices.backend.subscriptions.interfaces.rest.transform.CreateSubscriptionCommandFromResourceAssembler;
 import com.acme.nutrimove.subscriptionservices.backend.subscriptions.interfaces.rest.transform.SubscriptionResourceFromEntityAssembler;
-import com.acme.nutrimove.subscriptionservices.backend.user.domain.model.aggregates.User;
-import com.acme.nutrimove.subscriptionservices.backend.user.domain.services.UserQueryService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -30,12 +29,12 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class SubscriptionController {
     private final SubscriptionsQueryService subscriptionsQueryService;
     private final SubscriptionsCommandService subscriptionsCommandService;
-    private final UserQueryService userQueryService;
 
-    public SubscriptionController(SubscriptionsQueryService subscriptionsQueryService, SubscriptionsCommandService subscriptionsCommandService, UserQueryService userQueryService) {
+
+    public SubscriptionController(SubscriptionsQueryService subscriptionsQueryService, SubscriptionsCommandService subscriptionsCommandService) {
         this.subscriptionsQueryService = subscriptionsQueryService;
         this.subscriptionsCommandService = subscriptionsCommandService;
-        this.userQueryService = userQueryService;
+
     }
 
 
@@ -45,18 +44,6 @@ public class SubscriptionController {
             @ApiResponse(responseCode = "400", description = "Bad Request"),
     })
 
-    @PostMapping
-    public ResponseEntity<SubscriptionResource> createSubscription(@RequestBody CreateSubscriptionResource resource) {
-        Optional< User> userOptional = userQueryService.findById(resource.userId());
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-        User user = userOptional.get();
-        CreateSubscriptionCommand command = CreateSubscriptionCommandFromResourceAssembler.toCommand(resource, user);
-        Optional<Subscription> subscription = subscriptionsCommandService.handle(command);
-        return subscription.map(source -> ResponseEntity.status(CREATED).body(SubscriptionResourceFromEntityAssembler.toResourceFromEntity(source)))
-                .orElseGet(() -> ResponseEntity.badRequest().build());
-    }
 
 
     @GetMapping("{id}")

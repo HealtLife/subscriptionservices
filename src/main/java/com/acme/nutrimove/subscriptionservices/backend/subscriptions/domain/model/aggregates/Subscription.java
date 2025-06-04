@@ -18,29 +18,25 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter
     @Column(nullable = false)
     private String description;
 
-    @Setter
     @Column(nullable = false)
     private Double price;
 
-    @Setter
     @Column(nullable = false)
     private Integer monthDuration;
 
-    @Setter
     @Column(nullable = false)
     private Boolean trial;
 
     // En lugar de la entidad User, mantenemos solo el ID del usuario
-    @Setter
+
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
     // Constructor vacío para JPA
-    protected Subscription() {
+    public Subscription() {
     }
 
     // Constructor que recibe el comando de creación
@@ -51,3 +47,52 @@ public class Subscription {
         this.trial = command.trial();
         this.userId = command.userId();  // Solo guardamos el ID de usuario
     }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public Integer getMonthDuration() {
+        return monthDuration;
+    }
+
+    public void setMonthDuration(Integer monthDuration) {
+        this.monthDuration = monthDuration;
+    }
+
+    public Boolean getTrial() {
+        return trial;
+    }
+
+    public void setTrial(Boolean trial) {
+        this.trial = trial;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+}

@@ -36,7 +36,7 @@ public class SubscriptionsCommandServiceImpl implements SubscriptionsCommandServ
 
         Subscription subscription = new Subscription();
         subscription.setUserId(command.userId());
-        subscription.setPlan(command.plan());
+        //subscription.setPlan(command.plan());
 
         return Optional.of(subscriptionRepository.save(subscription));
     }
