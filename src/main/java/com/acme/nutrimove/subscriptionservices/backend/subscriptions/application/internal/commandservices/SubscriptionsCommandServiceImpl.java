@@ -35,7 +35,7 @@ public class SubscriptionsCommandServiceImpl implements SubscriptionsCommandServ
         if (userDTO == null) return Optional.empty();
 
         Subscription subscription = new Subscription();
-        subscription.setUserId(command.userId());
+        //subscription.setUserId(command.userId());
         //subscription.setPlan(command.plan());
 
         return Optional.of(subscriptionRepository.save(subscription));

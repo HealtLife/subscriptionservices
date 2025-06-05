@@ -3,7 +3,7 @@ package com.acme.nutrimove.subscriptionservices.backend.subscriptions.domain.mod
 import com.acme.nutrimove.subscriptionservices.backend.subscriptions.domain.model.commands.CreateSubscriptionCommand;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -27,13 +27,7 @@ public class Subscription {
     @Column(nullable = false)
     private Integer monthDuration;
 
-    @Column(nullable = false)
-    private Boolean trial;
 
-    // En lugar de la entidad User, mantenemos solo el ID del usuario
-
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
 
     // Constructor vacío para JPA
     public Subscription() {
@@ -44,13 +38,10 @@ public class Subscription {
         this.description = command.description();
         this.price = command.price();
         this.monthDuration = command.monthDuration();
-        this.trial = command.trial();
-        this.userId = command.userId();  // Solo guardamos el ID de usuario
+
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
+
 
     public Long getId() {
         return id;
@@ -84,15 +75,7 @@ public class Subscription {
         this.monthDuration = monthDuration;
     }
 
-    public Boolean getTrial() {
-        return trial;
-    }
 
-    public void setTrial(Boolean trial) {
-        this.trial = trial;
-    }
 
-    public Long getUserId() {
-        return userId;
-    }
+
 }

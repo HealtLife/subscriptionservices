@@ -10,9 +10,7 @@ public class SubscriptionResourceFromEntityAssembler {
                 subscription.getId(),
                 subscription.getDescription(),
                 subscription.getPrice(),
-                subscription.getMonthDuration(),
-                subscription.getTrial(),
-                subscription.getUserId()  // Ahora obtenemos directamente el ID
+                subscription.getMonthDuration() // Ahora obtenemos directamente el ID
         );
     }
 }

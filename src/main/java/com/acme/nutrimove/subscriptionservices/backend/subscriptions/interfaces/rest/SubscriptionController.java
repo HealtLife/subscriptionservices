@@ -1,12 +1,15 @@
 package com.acme.nutrimove.subscriptionservices.backend.subscriptions.interfaces.rest;
 
 import com.acme.nutrimove.subscriptionservices.backend.subscriptions.domain.model.aggregates.Subscription;
+import com.acme.nutrimove.subscriptionservices.backend.subscriptions.domain.model.aggregates.UserSuscription;
 import com.acme.nutrimove.subscriptionservices.backend.subscriptions.domain.model.commands.CreateSubscriptionCommand;
 import com.acme.nutrimove.subscriptionservices.backend.subscriptions.domain.model.queries.GetSubscriptionByIdQuery;
 import com.acme.nutrimove.subscriptionservices.backend.subscriptions.domain.services.SubscriptionsCommandService;
 import com.acme.nutrimove.subscriptionservices.backend.subscriptions.domain.services.SubscriptionsQueryService;
+import com.acme.nutrimove.subscriptionservices.backend.subscriptions.infrastructure.persistence.jpa.UserSubscriptionRepository;
 import com.acme.nutrimove.subscriptionservices.backend.subscriptions.interfaces.rest.resources.CreateSubscriptionResource;
 import com.acme.nutrimove.subscriptionservices.backend.subscriptions.interfaces.rest.resources.SubscriptionResource;
+import com.acme.nutrimove.subscriptionservices.backend.subscriptions.interfaces.rest.resources.UserSubscriptionResource;
 import com.acme.nutrimove.subscriptionservices.backend.subscriptions.interfaces.rest.transform.CreateSubscriptionCommandFromResourceAssembler;
 import com.acme.nutrimove.subscriptionservices.backend.subscriptions.interfaces.rest.transform.SubscriptionResourceFromEntityAssembler;
 
@@ -29,12 +32,12 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class SubscriptionController {
     private final SubscriptionsQueryService subscriptionsQueryService;
     private final SubscriptionsCommandService subscriptionsCommandService;
+    private final UserSubscriptionRepository userSubscriptionRepository;
 
-
-    public SubscriptionController(SubscriptionsQueryService subscriptionsQueryService, SubscriptionsCommandService subscriptionsCommandService) {
+    public SubscriptionController(SubscriptionsQueryService subscriptionsQueryService, SubscriptionsCommandService subscriptionsCommandService, UserSubscriptionRepository userSubscriptionRepository) {
         this.subscriptionsQueryService = subscriptionsQueryService;
         this.subscriptionsCommandService = subscriptionsCommandService;
-
+        this.userSubscriptionRepository = userSubscriptionRepository;
     }
 
 
@@ -64,4 +67,21 @@ public class SubscriptionController {
                 .toList();
         return ResponseEntity.ok(activityResources);
     }
+
+    @PostMapping("/user-subscription")
+    public ResponseEntity<String> createUserSubscription(@RequestBody UserSubscriptionResource resource) {
+        if (resource.getUserId() == null || resource.getSubscriptionId() == null) {
+            return ResponseEntity.badRequest().body("Error: userId and subscriptionId are required.");
+        }
+
+        UserSuscription userSubscription = new UserSuscription();
+        userSubscription.setUserId(resource.getUserId().toString());
+        userSubscription.setSubscriptionId(resource.getSubscriptionId().toString());
+
+        userSubscriptionRepository.save(userSubscription);
+
+        return ResponseEntity.status(CREATED).body("Subscription assigned to user successfully.");
+    }
+
+
 }
