@@ -10,4 +10,5 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     List<Subscription> findAllByDescription(String name);
 
     boolean existsByPriceAndDescription(Double price, String description);
+
 }

@@ -17,8 +17,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,10 +37,15 @@ public class SubscriptionController {
     private final SubscriptionsCommandService subscriptionsCommandService;
     private final UserSubscriptionRepository userSubscriptionRepository;
 
+
+    private final WebClient webClient;
+
+
     public SubscriptionController(SubscriptionsQueryService subscriptionsQueryService, SubscriptionsCommandService subscriptionsCommandService, UserSubscriptionRepository userSubscriptionRepository) {
         this.subscriptionsQueryService = subscriptionsQueryService;
         this.subscriptionsCommandService = subscriptionsCommandService;
         this.userSubscriptionRepository = userSubscriptionRepository;
+        this.webClient = WebClient.builder().build();
     }
 
 
@@ -77,8 +85,21 @@ public class SubscriptionController {
         UserSuscription userSubscription = new UserSuscription();
         userSubscription.setUserId(resource.getUserId().toString());
         userSubscription.setSubscriptionId(resource.getSubscriptionId().toString());
+        try {
+            userSubscriptionRepository.save(userSubscription);
+            // POST a otro microservicio
+            String otherServiceUrl = "http://localhost:8081/api/v1/users/update-subscription";
+            String result = webClient.put()
+                    .uri(otherServiceUrl)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(userSubscription)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
 
-        userSubscriptionRepository.save(userSubscription);
 
         return ResponseEntity.status(CREATED).body("Subscription assigned to user successfully.");
     }
