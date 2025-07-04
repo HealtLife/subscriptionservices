@@ -32,6 +32,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping(value = "api/v1/subscriptions", produces = APPLICATION_JSON_VALUE)
 @Tag(name = "Subscriptions", description = "Operation related to Subscriptions")
+@CrossOrigin(origins = "http://localhost:4200, http://localhost:4200/access" )
 public class SubscriptionController {
     private final SubscriptionsQueryService subscriptionsQueryService;
     private final SubscriptionsCommandService subscriptionsCommandService;
