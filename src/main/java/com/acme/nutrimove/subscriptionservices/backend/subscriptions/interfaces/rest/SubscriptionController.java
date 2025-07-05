@@ -104,6 +104,26 @@ public class SubscriptionController {
 
         return ResponseEntity.status(CREATED).body("Subscription assigned to user successfully.");
     }
+    @PostMapping("")
+    @Operation(summary = "Create a subscription", description = "Creates a new subscription plan")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Subscription created"),
+            @ApiResponse(responseCode = "400", description = "Invalid input")
+    })
+    public ResponseEntity<SubscriptionResource> createSubscription(@RequestBody CreateSubscriptionResource resource) {
+        try {
+            var command = CreateSubscriptionCommandFromResourceAssembler.toCommand(resource);
+            var result = subscriptionsCommandService.handle(command);
+
+            return result
+                    .map(subscription -> ResponseEntity.status(CREATED)
+                            .body(SubscriptionResourceFromEntityAssembler.toResourceFromEntity(subscription)))
+                    .orElseGet(() -> ResponseEntity.badRequest().build());
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 
 
 }

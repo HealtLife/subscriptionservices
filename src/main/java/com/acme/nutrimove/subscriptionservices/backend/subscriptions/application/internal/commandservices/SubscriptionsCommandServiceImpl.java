@@ -14,30 +14,17 @@ import java.util.Optional;
 public class SubscriptionsCommandServiceImpl implements SubscriptionsCommandService {
 
     private final SubscriptionRepository subscriptionRepository;
-    private final UserFeignClient userFeignClient;
 
-    public SubscriptionsCommandServiceImpl(SubscriptionRepository subscriptionRepository,
-                                           UserFeignClient userFeignClient) {
+
+    public SubscriptionsCommandServiceImpl(SubscriptionRepository subscriptionRepository) {
         this.subscriptionRepository = subscriptionRepository;
-        this.userFeignClient = userFeignClient;
+
     }
 
     @Override
     public Optional<Subscription> handle(CreateSubscriptionCommand command) {
-        // Llamada a user-service para verificar existencia del usuario
-        UserDTO userDTO;
-        try {
-            userDTO = userFeignClient.getUserById(command.userId());
-        } catch (Exception e) {
-            return Optional.empty();
-        }
-
-        if (userDTO == null) return Optional.empty();
-
-        Subscription subscription = new Subscription();
-        //subscription.setUserId(command.userId());
-        //subscription.setPlan(command.plan());
-
+        Subscription subscription = new Subscription(command);
         return Optional.of(subscriptionRepository.save(subscription));
     }
+
 }
